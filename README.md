@@ -83,12 +83,14 @@ plt.xticks([]);plt.ylabel('Energy Level(eV)');plt.show()
 
 ```python
 coord_mean = [x/2 for x in coord_add]
-plt.plot(coord_mean);plt.ylabel('$\phi_n$');plt.xlabel('n');plt.show()
+plt.plot(coord_mean,linewidth=5.0);plt.ylabel('$\phi_n$');plt.xlabel('n');plt.show()
 ```
 
 
 ![png](output_11_0.png)
 
+
+   **The order parameter $\phi_n^0+\phi_{n+1}^0$**
 
 ### Now we want to consider another case, what about using the open boundary condition?
 
@@ -109,8 +111,8 @@ while iter_num < 100:
         zz = [eigve[i-1, x] * eigve[i, x] for x in range(Ne//2)]
         ZZ.append(2 * np.sum(zz))
     if Ne % 2 != 0:
-        ZZ[:N-1] = [(ZZ[x] + eigve[x-1, Ne//2]*eigve[x, Ne//2])
-                    for x in range(1, N)]
+        ZZ[:N-2] = [(ZZ[x] + eigve[x-1, Ne//2]*eigve[x, Ne//2])
+                    for x in range(1, N-1)]
         ZZ[-1] = ZZ[-1] + eigve[0, Ne//2]*eigve[-1, Ne//2]
     ZZ_tot = np.sum(ZZ)
     for i in range(1, N):
@@ -118,15 +120,25 @@ while iter_num < 100:
 for i in range(N):
     plt.plot(range(2), [eigva[i]]*2, 'k')
 plt.xticks([]);plt.ylabel('Energy Level(eV)');plt.show()
-coord_mean = [x/2 for x in coord_add]; plt.plot(coord_mean)
-plt.ylabel('$\phi_n$');plt.xlabel('n');plt.show()
-    
 ```
 
 
-![png](output_13_0.png)
+![png](output_14_0.png)
 
 
 
-![png](output_13_1.png)
+```python
+coeff = np.eye(N-1) + np.diag([1]*(N-2),k=1)
+coord = np.linalg.solve(coeff, coord_add)
+coord_mean = [x/2 for x in coord_add]
+plt.scatter(range(N-1), coord)
+plt.scatter(range(N-1), coord_mean);
+plt.ylabel('$\phi_n$');plt.xlabel('n');plt.show()
+```
 
+
+![png](output_15_0.png)
+
+
+Shown above is the order parameter, the blue line represents the displacement of one atom; 
+and the yellow one is one half of the bond length.
